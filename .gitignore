@@ -124,3 +124,4 @@ Thumbs.db
 
 # Bazel stuff
 bazel-*
+MODULE.bazel.lock
