@@ -1,0 +1,34 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+
+py_library(
+    name = "Python",
+    srcs = [
+        "1Ddiffusion.py",
+        "ConjGradSD.py",
+        "Jacobi.py",
+        "MatrixMultiply.py",
+        "MatrixMultiplyRowDom.py",
+        "OpenCLtest2.py",
+        "StandardMaxMult.py",
+        "backsub.py",
+        "test.py",
+        "testparamatmul.py",
+        "testtt.py",
+    ],
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "@pypi//matplotlib",
+        "@pypi//numpy",
+        "@pypi//pyopencl",
+    ],
+)
+
+py_binary(
+    name = "backwards_substitution",
+    srcs = ["backsub.py"],
+    main = "backsub.py",
+    deps = [
+        "@pypi//numpy",
+        "@pypi//pyopencl",
+    ],
+)
