@@ -1,0 +1,34 @@
+# GENERATED FILE - DO NOT EDIT!
+#
+# To update this file, run:
+#   bazel run //:gazelle_python_manifest.update
+
+---
+manifest:
+  modules_mapping:
+    PIL: pillow
+    colorama: colorama
+    contourpy: contourpy
+    cycler: cycler
+    dateutil: python_dateutil
+    fontTools: fonttools
+    importlib_resources: importlib_resources
+    kiwisolver: kiwisolver
+    matplotlib: matplotlib
+    mpl_toolkits.axes_grid1: matplotlib
+    mpl_toolkits.axisartist: matplotlib
+    mpl_toolkits.mplot3d: matplotlib
+    numpy: numpy
+    packaging: packaging
+    platformdirs: platformdirs
+    pylab: matplotlib
+    pyopencl: pyopencl
+    pyparsing: pyparsing
+    pytools: pytools
+    siphash24: siphash24
+    six: six
+    typing_extensions: typing_extensions
+    zipp: zipp
+  pip_repository:
+    name: pypi
+integrity: 6cc3c9b52ba360d746544cfe8c6a54830f7e29fe3bbcbf8b288d7cc4f618e2e3
