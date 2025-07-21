@@ -41,3 +41,6 @@ use_repo(pip, "pypi")
 # The following stanza defines the dependency rules_python_gazelle_plugin.
 # For typical setups you set the version.
 bazel_dep(name = "rules_python_gazelle_plugin", version = "1.5.1")
+
+opencl_headers = use_extension("//third_party/opencl_headers:opencl.bzl", "opencl_headers")
+use_repo(opencl_headers, "opencl_headers")

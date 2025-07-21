@@ -1,0 +1,17 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_test")
+
+cc_binary(
+    name = "lol",
+    srcs = ["lol.c"],
+    deps = ["@opencl_headers"],
+)
+
+cc_test(
+    name = "detect_opencl_platforms",
+    srcs = ["opencl_test.c"],
+    linkopts = [
+        "-L/usr/lib/x86_64-linux-gnu",
+        "-lOpenCL",
+    ],
+    deps = ["@opencl_headers"],
+)
