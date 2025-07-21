@@ -1,0 +1,37 @@
+"""
+Module
+"""
+module(
+    name = "cuda_cc",
+    version = "0.0.1",
+)
+
+bazel_dep(name = "gazelle", version = "0.42.0")
+bazel_dep(name = "rules_cc", version = "0.1.2")
+bazel_dep(name = "gazelle_cc", version = "0.1.0")
+bazel_dep(name = "rules_cuda", version = "0.2.4")
+
+# pick a specific version (this is optional an can be skipped)
+archive_override(
+    module_name = "rules_cuda",
+    integrity = "sha256-9PahCCOjx6Kqp2PFugoJEi09fXQBSsiOCxPbQbnMnFk=",
+    url = "https://github.com/bazel-contrib/rules_cuda/archive/28177e2283a16b1e81c229e9bdc5610f1f3b07f7.tar.gz",
+    strip_prefix = "rules_cuda-28177e2283a16b1e81c229e9bdc5610f1f3b07f7",
+)
+
+cuda = use_extension("@rules_cuda//cuda:extensions.bzl", "toolchain")
+cuda.toolkit(
+    name = "cuda",
+    toolkit_path = "",
+)
+use_repo(cuda, "cuda")
+
+# Hedron's Compile Commands Extractor for Bazel
+bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
+git_override(
+    module_name = "hedron_compile_commands",
+    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
+    commit = "4f28899228fb3ad0126897876f147ca15026151e",
+)
+
+bazel_dep(name = "googletest", version = "1.17.0")
