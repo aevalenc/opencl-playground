@@ -30,5 +30,6 @@ py_binary(
     deps = [
         "@pypi//numpy",
         "@pypi//pyopencl",
+        "@pypi//siphash24",
     ],
 )
