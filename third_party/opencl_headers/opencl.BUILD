@@ -29,6 +29,7 @@ cc_library(
         "CL/cl_va_api_media_sharing_intel.h",
         "CL/cl_version.h",
         "CL/opencl.h",
+        "CL/opencl.hpp",
     ],
     includes = ["."],
 )

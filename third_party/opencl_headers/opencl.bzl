@@ -11,6 +11,7 @@ def _opencl_headers_impl(mctx):
         strip_prefix = "OpenCL-Headers-2024.10.24",
         urls = ["https://github.com/KhronosGroup/OpenCL-Headers/archive/refs/tags/v2024.10.24.zip"],
         build_file = "//third_party/opencl_headers:opencl.BUILD",
+        patches = ["//third_party/opencl_headers:add_cpp_header.patch"],
     )
 
 opencl_headers = module_extension(implementation = _opencl_headers_impl)
