@@ -1,0 +1,39 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+# cc_library(
+#     name = "CXX",
+#     hdrs = ["mylib.h"],
+#     visibility = ["//visibility:public"],
+# )
+
+# cc_binary(
+#     name = "Jacobi_Iteration",
+#     srcs = ["Jacobi_Iteration.cpp"],
+#     deps = [":CXX"],
+# )
+
+# cc_binary(
+#     name = "MatrixMultiply",
+#     srcs = ["MatrixMultiply.cpp"],
+# )
+
+# cc_binary(
+#     name = "c++_test_bench",
+#     srcs = ["c++_test_bench.cpp"],
+#     deps = [":CXX"],
+# )
+
+cc_binary(
+    name = "cl_add_arrays",
+    srcs = ["cl_add_arrays.cpp"],
+    linkopts = [
+        "-L/usr/lib/x86_64-linux-gnu",
+        "-lOpenCL",
+    ],
+    deps = ["@opencl_headers"],
+)
+
+# cc_binary(
+#     name = "opencl_test_bench",
+#     srcs = ["opencl_test_bench.cpp"],
+# )
