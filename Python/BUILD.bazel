@@ -33,3 +33,15 @@ py_binary(
         "@pypi//siphash24",
     ],
 )
+
+py_binary(
+    name = "jacobi_method",
+    srcs = ["Jacobi.py"],
+    main = "Jacobi.py",
+    deps = [
+        "@pypi//matplotlib",
+        "@pypi//numpy",
+        "@pypi//pyopencl",
+        "@pypi//siphash24",
+    ],
+)
