@@ -10,10 +10,6 @@ cc_library(
 cc_binary(
     name = "Jacobi_Iteration",
     srcs = ["Jacobi_Iteration.cpp"],
-    # linkopts = [
-    #     "-L/usr/lib/x86_64-linux-gnu",
-    #     "-lOpenCL",
-    # ],
     data = ["cl_jacobi.cl"],
     deps = [
         ":utils",
@@ -35,10 +31,6 @@ cc_binary(
 cc_binary(
     name = "cl_add_arrays",
     srcs = ["cl_add_arrays.cpp"],
-    linkopts = [
-        "-L/usr/lib/x86_64-linux-gnu",
-        "-lOpenCL",
-    ],
     deps = ["@opencl_headers"],
 )
 

@@ -15,17 +15,38 @@
 #include "CXX/utils.h"
 #include <CL/opencl.hpp>
 #include <cmath>
+#include <fstream>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 
-/************************************************************************
- * Function Declarations *
- ************************************************************************/
+namespace
+{
 
-std::int32_t print_platforms(std::int32_t, std::vector<cl::Platform>);
+std::int32_t print_platforms(std::int32_t num_platforms, std::vector<cl::Platform> platforms)
+{
 
-// end Function Declarations
+    std::int32_t i;
+    for (i = 0; i < num_platforms; i++)
+    {
+
+        auto platform_profile = platforms[i].getInfo<CL_PLATFORM_PROFILE>();
+        auto platform_name = platforms[i].getInfo<CL_PLATFORM_NAME>();
+        auto platform_vendor = platforms[i].getInfo<CL_PLATFORM_VENDOR>();
+        auto platform_version = platforms[i].getInfo<CL_PLATFORM_VERSION>();
+        auto platform_extensions = platforms[i].getInfo<CL_PLATFORM_EXTENSIONS>();
+
+        std::cout << "\nPlatform Profile	: " << platform_profile << std::endl;
+        std::cout << "Platform Name		: " << platform_name << std::endl;
+        std::cout << "Platform Vendor		: " << platform_vendor << std::endl;
+        std::cout << "Platform Version	: " << platform_version << std::endl;
+        std::cout << "Platform Extensions	: " << platform_extensions << "\n" << std::endl;
+    }
+
+    return 0;
+}
+
+}  // namespace
 
 /************************************************************************
  * Main Program
@@ -97,18 +118,13 @@ std::int32_t main()
     // [F]:Program and Kernel
     // First write the kernel to be executed then build the program before
     // 	setting the kernel
-    FILE* fp;
-    char* source_str;
-
-    fp = fopen("CXX/cl_jacobi.cl", "r");
-    if (!fp)
+    std::ifstream kernel_file("CXX/cl_jacobi.cl");
+    if (!kernel_file)
     {
-        fprintf(stderr, "Failed to load kernel.\n");
+        std::cerr << "Failed to load kernel." << std::endl;
         exit(1);
     }
-    source_str = (char*)malloc(MAX_SOURCE_SIZE);
-    std::ignore = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
-    fclose(fp);
+    std::string source_str((std::istreambuf_iterator<char>(kernel_file)), std::istreambuf_iterator<char>());
 
     cl::Program program(context, source_str);
 
@@ -207,31 +223,3 @@ std::int32_t main()
     }
 
 }  // END program
-
-/************************************************************************
- * Print All Platforms Functions 										*
- ************************************************************************/
-
-std::int32_t print_platforms(std::int32_t num_platforms, std::vector<cl::Platform> platforms)
-{
-
-    std::int32_t i;
-    for (i = 0; i < num_platforms; i++)
-    {
-
-        auto platform_profile = platforms[i].getInfo<CL_PLATFORM_PROFILE>();
-        auto platform_name = platforms[i].getInfo<CL_PLATFORM_NAME>();
-        auto platform_vendor = platforms[i].getInfo<CL_PLATFORM_VENDOR>();
-        auto platform_version = platforms[i].getInfo<CL_PLATFORM_VERSION>();
-        auto platform_extensions = platforms[i].getInfo<CL_PLATFORM_EXTENSIONS>();
-
-        std::cout << "\nPlatform Profile	: " << platform_profile << std::endl;
-        std::cout << "Platform Name		: " << platform_name << std::endl;
-        std::cout << "Platform Vendor		: " << platform_vendor << std::endl;
-        std::cout << "Platform Version	: " << platform_version << std::endl;
-        std::cout << "Platform Extensions	: " << platform_extensions << "\n" << std::endl;
-    }
-
-    return 0;
-
-}  // end FUNCTION print_platforms
