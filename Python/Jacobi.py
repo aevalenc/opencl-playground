@@ -65,14 +65,19 @@ def jacobi_cpu(A, b, x0, x, tolerance):
 def setup_opencl():
     # [A]:Retrieve Platforms
     platforms = cl.get_platforms()
-    platform_extension = platforms[0].extensions
-    platform_name = platforms[0].name
+    if len(platforms) == 0:
+        raise RuntimeError("No OpenCL platforms found. Please check your OpenCL installation.")
+
+    print("Using OpenCL platform:", platforms[1].name)
+    platform = platforms[1]
+    platform_extension = platform.extensions
+    platform_name = platform.name
 
     # [B]:Retrieve Devices
     # On this system platform 0 is the OpenCL Intel Compute Runtime. At the
     #   current momment run OpenCL only on CPU
-    cpu_devices = platforms[0].get_devices(cl.device_type.CPU)  # Retrieve CPU
-    gpu_devices = platforms[0].get_devices(cl.device_type.GPU)  # Retrieve GPU if no CPU
+    cpu_devices = platform.get_devices(cl.device_type.CPU)  # Retrieve CPU
+    gpu_devices = platform.get_devices(cl.device_type.GPU)  # Retrieve GPU if no CPU
     if len(cpu_devices) == 0 and len(gpu_devices) == 0:
         raise RuntimeError("No OpenCL devices found. Please check your OpenCL installation.")
 
