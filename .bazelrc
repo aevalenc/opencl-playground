@@ -1,0 +1,3 @@
+# Build configuration for OpenCL
+build:opencl --action_env=LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu --linkopt=-lOpenCL
+build:opencl --cxxopt=-std=c++17
