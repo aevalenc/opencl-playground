@@ -339,23 +339,29 @@ double max(double x[], std::int32_t n)
     return maxval;
 }
 
-std::int32_t matmult(double A[], double B[], double C[], std::int32_t m, std::int32_t n, std::int32_t p)
+std::int32_t matmult(double A[],
+                     double B[],
+                     double C[],
+                     const std::int32_t M,
+                     const std::int32_t N,
+                     const std::int32_t P)
 {
 
     /* Declarations */
     double sum{0.0};
 
     /* Main Algorithm */
-    for (std::int32_t i = 0; i < m; i++)
+    for (std::int32_t i = 0; i < M; ++i)
     {
-        for (std::int32_t j = 0; j < p; j++)
+        // Initialize sum
+        for (std::int32_t j = 0; j < P; ++j)
         {
             sum = 0.0;
-            for (std::int32_t k = 0; k < n; k++)
+            for (std::int32_t k = 0; k < N; ++k)
             {
-                sum += A[k + n * i] * B[j + p * k];
+                sum += A[k + N * i] * B[j + P * k];
             }
-            C[(j - 1) + p * i] = sum;
+            C[j + P * i] = sum;
         }
     }
 

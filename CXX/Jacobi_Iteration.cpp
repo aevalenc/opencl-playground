@@ -42,11 +42,15 @@ std::int32_t main()
     // [A]:Problem Setup
     const std::int32_t nx = 9;
     const std::int32_t ny = 3;
-    const std::int32_t maxiter = 1000;
+    const std::int32_t maxiter = 200;
     std::array<double, nx> A = {2, -1, 0, -1, 2, -1, 0, -1, 2};  // Left Hand Side
     std::array<double, ny> b = {200, 0, 400};                    // Right Hand Side
-    std::array<double, ny> x = {1, 1, 1};                        // Initial Guess
-    std::array<double, ny> xn, RES, tmp;                         // Solution Vector
+    std::array<double, ny> x0 = {1, 1, 1};                       // Initial Guess
+    auto x = x0;                                                 // Previous Iteration
+    std::array<double, ny> residual{};                           // Residuals
+    auto tmp = x0;                                               // Temporary Vector
+
+    // std::array<double, ny> xn, RES, tmp;                         // Solution Vector
     const double tolerance = 0.001;
 
     // [B]:Create Platform Object
@@ -89,8 +93,6 @@ std::int32_t main()
     // [E]:Create Memory Buffers
     cl::Buffer A_buf(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double) * nx, A.data());
     cl::Buffer b_buf(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double) * ny, b.data());
-    // cl::Buffer xn_buf(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(std::int32_t)*ny,xn);
-    // cl::Buffer x_buf(context, CL_MEM_WRITE_ONLY | CL_MEM_COPY_HOST_PTR,sizeof(std::int32_t)*ny,x);
 
     // [F]:Program and Kernel
     // First write the kernel to be executed then build the program before
@@ -127,11 +129,8 @@ std::int32_t main()
         return 1;
     }
 
-    std::cout << "Program built successfully!" << std::endl;
-    // free(source_str);  // Free the source string after building the program
-
     const auto build_info = program.getBuildInfo(device, CL_PROGRAM_BUILD_LOG, &source_str);
-    std::cout << "Build Info: " << build_info << std::endl;
+    std::cout << "Program build Info: " << build_info << std::endl;
 
     try
     {
@@ -139,57 +138,54 @@ std::int32_t main()
 
         // [G]:Iterate
         std::int32_t iter = 1;
-        std::int32_t i;
-        for (i = 0; i < ny; i++)
+        for (std::int32_t i = 0; i < ny; i++)
         {
-            utils::matmult(A.data(), x.data(), tmp.data(), ny, ny, 1);
-            RES[i] = fabs(b[i] - tmp[i]);
-        }  // end i
+            utils::matmult(A.data(), x0.data(), tmp.data(), ny, ny, 1);
+            residual[i] = fabs(b[i] - tmp[i]);
+        }
 
-        printf("iter = %d | Max Residual = %f\n", iter, utils::max(RES.data(), ny));
+        printf("iter = %d | Max Residual = %f\n", iter, utils::max(residual.data(), ny));
 
-        while (utils::max(RES.data(), ny) > tolerance)
+        while (utils::max(residual.data(), ny) > tolerance)
         {
-            std::copy(xn.begin(), xn.end(), x.begin());
+            std::copy(x.begin(), x.end(), x0.begin());
 
             // [H]:Advance Iteration Counter
             iter += 1;
 
-            cl::Buffer xn_buf(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double) * ny, xn.data());
+            cl::Buffer x0_buf(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double) * ny, x0.data());
             cl::Buffer x_buf(context, CL_MEM_WRITE_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(double) * ny, x.data());
 
             // [I]:Set Kernel Arguments
             kernel.setArg(0, ny);
             kernel.setArg(1, A_buf);
             kernel.setArg(2, b_buf);
-            kernel.setArg(3, xn_buf);
+            kernel.setArg(3, x0_buf);
             kernel.setArg(4, x_buf);
 
             // [J]:Enqueue Kernel
             cl::NDRange global(ny);
             cl::NDRange local(1);
             err = queue.enqueueNDRangeKernel(kernel, cl::NullRange, global, local);
-            if (iter == 2)
-            {
-                std::cout << "Execute kernel error number = " << err << std::endl;
-            }  // end if
-
             err = queue.enqueueReadBuffer(x_buf, CL_TRUE, 0, sizeof(double) * ny, x.data());
-            if (iter == 2)
-            {
-                std::cout << "Reading result buffer error = " << err << std::endl;
-            }  // end if
 
-            for (i = 0; i < ny; i++)
+            for (std::int32_t i = 0; i < ny; i++)
             {
                 utils::matmult(A.data(), x.data(), tmp.data(), ny, ny, 1);
-                RES[i] = fabs(b[i] - tmp[i]);
-            }  // end i
+                residual[i] = fabs(b[i] - tmp[i]);
+            }
 
-            printf("iter = %d | Max Residual = %f\n", iter, utils::max(RES.data(), ny));
+            const auto max_residual = utils::max(residual.data(), ny);
+            printf("iter = %d | Max Residual = %f\n", iter, max_residual);
 
             if (iter == maxiter)
             {
+                std::cout << "Maximum iterations reached: " << maxiter << std::endl;
+                break;
+            }
+            if (max_residual <= tolerance)
+            {
+                std::cout << "Convergence achieved with tolerance: " << tolerance << std::endl;
                 break;
             }
 
@@ -198,10 +194,10 @@ std::int32_t main()
         std::cout << "Code executed successfully!" << std::endl;
 
         // Display Result
-        for (i = 0; i < ny; i++)
+        for (std::int32_t i = 0; i < ny; i++)
         {
             std::cout << x[i] << std::endl;
-        }  // end i
+        }
     }
 
     catch (const cl::Error& e)
@@ -234,8 +230,7 @@ std::int32_t print_platforms(std::int32_t num_platforms, std::vector<cl::Platfor
         std::cout << "Platform Vendor		: " << platform_vendor << std::endl;
         std::cout << "Platform Version	: " << platform_version << std::endl;
         std::cout << "Platform Extensions	: " << platform_extensions << "\n" << std::endl;
-
-    }  // end i
+    }
 
     return 0;
 

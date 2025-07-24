@@ -254,7 +254,12 @@ double max(double x[], std::int32_t n);
  !
 */
 
-std::int32_t matmult(double A[], double B[], double C[], std::int32_t m, std::int32_t n, std::int32_t p);
+std::int32_t matmult(double A[],
+                     double B[],
+                     double C[],
+                     const std::int32_t M,
+                     const std::int32_t N,
+                     const std::int32_t P);
 
 }  // namespace utils
 
